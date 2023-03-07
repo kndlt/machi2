@@ -30,6 +30,7 @@ export default function Sprite({
             width={width}
             height={height}
             {...props}
+            tabIndex={0}
         />
     )
 }

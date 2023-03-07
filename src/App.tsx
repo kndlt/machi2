@@ -3,21 +3,19 @@ import logo from './logo.svg';
 import './App.css';
 import Sprite from './Sprite';
 import Boy from './Boy';
+import { KaiProvider } from './KaiProvider';
 
 function App() {
-  const objs: any[] = [];
-
-
 
   return (
     <div className="App">
-      <Haikei />
-      
-      <Boy style={{
-        position: "absolute",
-        bottom:200,
-        left: 200
-      }} />
+      <KaiProvider>
+        <Haikei />
+        
+        <Boy style={{
+          position: "absolute",
+        }} />
+      </KaiProvider>
     </div>
   );
 }
