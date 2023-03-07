@@ -15,6 +15,7 @@ function App() {
         <Boy style={{
           position: "absolute",
         }} />
+        <input></input>
       </KaiProvider>
     </div>
   );
@@ -28,6 +29,7 @@ function Haikei () {
       left:0,
       right:0,
       bottom:0,
+      zIndex: -1,
       backgroundColor: "#8cd2fa"
     }}></div>
   )

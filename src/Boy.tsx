@@ -9,13 +9,13 @@ export default function Boy({
 }: BoyProps) {
 
     const id = useId();
-    const { x, y, move } = useKai(id, 0, 0);
+    // const { x, y, move } = useThing(id, 0, 0);
 
     const handleKeyDownCapture:React.KeyboardEventHandler<HTMLCanvasElement> = (evt) => {
         console.log("yo");
         // evt.preventDefault();
         // evt.stopPropagation();
-        move();
+        // move();
     }
     const handleKeyUpCapture:React.KeyboardEventHandler<HTMLCanvasElement> = () => {
         console.log("yo2");
@@ -28,8 +28,8 @@ export default function Boy({
             {...props}
             style={{
                 ...props.style,
-                bottom: y,
-                left: x,
+                bottom: 0,
+                left: 0,
             }}
             onKeyDownCapture={handleKeyDownCapture}
             onKeyUpCapture={handleKeyUpCapture}

@@ -1,11 +1,11 @@
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useCallback, useContext, useEffect } from "react"
 
-import { useRerender, usePersist } from "@lilib/hooks";
-import useLocalStorage from 'react-use-localstorage';
+import { useUpdate, useLocalStorage, useInterval } from "react-use";
+import { Kai } from "./models/Kai";
+import React from "react";
+import { Thing } from "./models/Thing";
 
-export interface KaiContextValue {
-    objs: Map<string, any>
-}
+export type KaiContextValue = Kai;
 
 export const KaiContext = createContext<KaiContextValue | undefined>(undefined);
 
@@ -13,38 +13,46 @@ export interface KaiProps {
     children?: React.ReactNode;
 }
 
+export const KAI_PERSISTENCE_KEY = "machi2-kai-persistence";
+
 export function KaiProvider({ children }: KaiProps) {
-    const value={
-        objs: new Map()
-    };
-    console.log("yoX",children);
+    const [encodedKai, setEncodedKai] = useLocalStorage<string>(KAI_PERSISTENCE_KEY, "{}", { raw: true });
+    const [kai] = React.useState(() => new Kai());
+
+    useEffect(() => {
+        if (encodedKai) {
+            kai.load(encodedKai);
+        }
+    }, [encodedKai, kai]);
+
+    
+    const autoSaveKai = useCallback(() => {
+        const newlyEncoded = kai.encode();
+        if (newlyEncoded !== encodedKai) {
+            console.log(newlyEncoded);
+            setEncodedKai(newlyEncoded);
+        }
+    }, [encodedKai, kai, setEncodedKai])
+    
+    useInterval(autoSaveKai, 10000);
+    
     return (
-        <KaiContext.Provider value={value}>
+        <KaiContext.Provider value={kai}>
             {children}
         </KaiContext.Provider>
     )
 }
 
-export function useKai(id: string, x: number, y: number): {x: number, y: number, move: () => void} {
-    const { objs } = useContext(KaiContext)!; 
-    let obj: any = objs.get(id);
-    if (!obj) {
-        obj = {x, y}
-        objs.set(id, obj);
+export function useKai(): KaiContextValue {
+    const kai = useContext(KaiContext)!; 
+    if (!kai) {
+        throw new Error("useKai should have been called inside KaiProvider");
     }
+    return kai;
+}
 
-    useEffect(() => () => {
-        objs.delete(id);
-    }, [id, objs])
-
-    const rerender = useRerender();
-    
-    return {
-        ...obj,
-        move: () => {
-            obj.x += 10;
-            console.log(obj.x);
-            rerender();
-        }
-    };
+export function useThing(id: string) {
+    const kai = useKai();
+    const thing = kai.things.get(id);
+    if (thing) return thing;
 }
